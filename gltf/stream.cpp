@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <math.h>
 #include <stdint.h>
+#include <string>
 
 #include "../src/meshoptimizer.h"
 
@@ -112,6 +113,7 @@ static size_t follow(std::vector<size_t>& parents, size_t index)
 	return index;
 }
 
+#pragma warning(disable : 26812)
 void prepareQuantizationTexture(cgltf_data* data, std::vector<QuantizationTexture>& result, std::vector<size_t>& indices, const std::vector<Mesh>& meshes, const Settings& settings)
 {
 	// use union-find to associate each material with a canonical material
@@ -127,6 +129,11 @@ void prepareQuantizationTexture(cgltf_data* data, std::vector<QuantizationTextur
 
 		if (!mesh.material && mesh.variants.empty())
 			continue;
+
+		if (_strcmpi(mesh.material->name, "ShadowMat") == 0)
+		{
+			mesh.material->alpha_mode = cgltf_alpha_mode_blend;
+		}
 
 		size_t root = follow(parents, (mesh.material ? mesh.material : mesh.variants[0].material) - data->materials);
 
@@ -293,7 +300,7 @@ StreamFormat writeVertexStream(std::string& bin, const Stream& stream, const Qua
 				bin.append(reinterpret_cast<const char*>(v), sizeof(v));
 			}
 
-			StreamFormat format = {cgltf_type_vec3, cgltf_component_type_r_16u, false, 8};
+			StreamFormat format = {cgltf_type_vec3, cgltf_component_type_r_16, false, 8};
 			return format;
 		}
 		else
@@ -325,7 +332,7 @@ StreamFormat writeVertexStream(std::string& bin, const Stream& stream, const Qua
 					bin.append(reinterpret_cast<const char*>(v), sizeof(v));
 				}
 
-				StreamFormat format = {cgltf_type_vec3, cgltf_component_type_r_8, false, 4};
+				StreamFormat format = {cgltf_type_vec3, cgltf_component_type_r_8u, false, 4};
 				return format;
 			}
 			else
@@ -368,7 +375,7 @@ StreamFormat writeVertexStream(std::string& bin, const Stream& stream, const Qua
 			bin.append(reinterpret_cast<const char*>(v), sizeof(v));
 		}
 
-		StreamFormat format = {cgltf_type_vec2, cgltf_component_type_r_16u, false, 4};
+		StreamFormat format = {cgltf_type_vec2, cgltf_component_type_r_16, false, 4};
 		return format;
 	}
 	else if (stream.type == cgltf_attribute_type_normal)
@@ -444,7 +451,7 @@ StreamFormat writeVertexStream(std::string& bin, const Stream& stream, const Qua
 		}
 		else
 		{
-			StreamFormat format = {cgltf_type_vec3, cgltf_component_type_r_8, true, 4, filter};
+			StreamFormat format = {cgltf_type_vec3, cgltf_component_type_r_8u, true, 4, filter};
 			return format;
 		}
 	}
@@ -522,7 +529,7 @@ StreamFormat writeVertexStream(std::string& bin, const Stream& stream, const Qua
 
 		if (bits > 8)
 		{
-			StreamFormat format = {cgltf_type_vec4, cgltf_component_type_r_16u, true, 8};
+			StreamFormat format = {cgltf_type_vec4, cgltf_component_type_r_16, true, 8};
 			return format;
 		}
 		else
@@ -595,7 +602,7 @@ StreamFormat writeVertexStream(std::string& bin, const Stream& stream, const Qua
 				bin.append(reinterpret_cast<const char*>(v), sizeof(v));
 			}
 
-			StreamFormat format = {cgltf_type_vec4, cgltf_component_type_r_16u, false, 8};
+			StreamFormat format = {cgltf_type_vec4, cgltf_component_type_r_16, false, 8};
 			return format;
 		}
 	}

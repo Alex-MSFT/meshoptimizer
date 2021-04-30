@@ -11,8 +11,8 @@ endif()
 
 project(meshoptimizer VERSION 0.16 LANGUAGES CXX)
 
-option(MESHOPT_BUILD_DEMO "Build demo" OFF)
-option(MESHOPT_BUILD_GLTFPACK "Build gltfpack" OFF)
+option(MESHOPT_BUILD_DEMO "Build demo" ON)
+option(MESHOPT_BUILD_GLTFPACK "Build gltfpack" ON)
 option(MESHOPT_BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 set(SOURCES
@@ -51,9 +51,9 @@ set(GLTF_SOURCES
 )
 
 if(MSVC)
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4)
 else()
-    add_compile_options(-Wall -Wextra -Wshadow -Wno-missing-field-initializers -Werror)
+    add_compile_options(-Wall -Wextra -Wshadow -Wno-missing-field-initializers)
 endif()
 
 if(MESHOPT_BUILD_SHARED_LIBS)
